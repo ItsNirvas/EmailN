@@ -10,12 +10,12 @@ func TestNewCampaign(t *testing.T) {
 	campaign := NewCampaign(name, content, contacts)
 
 	if campaign.ID != "1" {
-		t.Errorf("ID Expected 1. Received: ", campaign.ID)
+		t.Error("ID Expected 1. Received: ", campaign.ID)
 	} else if campaign.Name != name {
-		t.Errorf("Name Expected: ", name, ". Received: ", campaign.Name)
+		t.Error("Name Expected: ", name, ". Received: ", campaign.Name)
 	} else if campaign.Content != content {
-		t.Errorf("Content Expected: ", content, ". Received: ", campaign.Content)
+		t.Error("Content Expected: ", content, ". Received: ", campaign.Content)
 	} else if len(campaign.Contacts) != len(contacts) {
-		t.Errorf("Contacts Expected: ", contacts, ". Received: ", campaign.Contacts)
+		t.Error("Contacts Expected: ", contacts, ". Received: ", campaign.Contacts)
 	}
 }
