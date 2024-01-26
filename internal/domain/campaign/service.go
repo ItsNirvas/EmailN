@@ -5,12 +5,20 @@ import (
 )
 
 type Service struct {
-	RepositoryN Repository
+	RepositoryS Repository
 }
 
 func (s *Service) Create(newCampaign contract.NewCampaign) (string, error) {
-	campaign, _ := NewCampaign(newCampaign.Name, newCampaign.Content, newCampaign.Contacts)
-	s.RepositoryN.Save(campaign)
+
+	campaign, err := NewCampaign(newCampaign.Name, newCampaign.Content, newCampaign.Contacts)
+	if err != nil {
+		return "", err
+	} else {
+		err := s.RepositoryS.Save(campaign)
+		if err != nil {
+			return "", err
+		}
+	}
 
 	return campaign.ID, nil
 }
