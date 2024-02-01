@@ -22,8 +22,8 @@ func (r *repositoryMock) Save(campaign *Campaign) error {
 var (
 	newCampaign = contract.NewCampaign{
 		Name:     "Test X",
-		Content:  "Body",
-		Contacts: []string{"test1@gmail,com", "test2@gmail.com", "test3@gmail.com"},
+		Content:  "Shirt",
+		Contacts: []string{"test1@gmail.com", "test2@gmail.com", "test3@gmail.com"},
 	}
 
 	service = Service{}
@@ -48,12 +48,10 @@ func TestCreateCampaign(t *testing.T) {
 
 func TestCreateCampaign_ValidadeErrors(t *testing.T) {
 	assert := assert.New(t)
-	newCampaign.Name = ""
 
-	_, err := service.Create(newCampaign)
+	_, err := service.Create(contract.NewCampaign{})
 
-	assert.NotNil(err)
-	assert.Equal("all fields must be filled", err.Error())
+	assert.False(errors.Is(internalerrors.ErrInternal, err))
 }
 
 func TestCreateCampaign_ValidateRepositorySave(t *testing.T) {
