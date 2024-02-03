@@ -1,6 +1,11 @@
 package main
 
 import (
+	"emailn/internal/contract"
+	"emailn/internal/domain/campaign"
+	"emailn/internal/infrastructure/database"
+	internalerrors "emailn/internal/internalErrors"
+	"errors"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -17,46 +22,34 @@ type myHandler struct{}
 
 func main() {
 	r := chi.NewRouter()
+
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		println("endpoint")
-	})
+	service := campaign.Service{
+		RepositoryS: &database.CampaignRepository{},
+	}
 
-	r.Get("/{productName}/{productId}", func(w http.ResponseWriter, r *http.Request) {
-		param := chi.URLParam(r, "productName")
-		w.Write([]byte(param))
-	})
+	r.Post("/campaigns", func(w http.ResponseWriter, r *http.Request) {
+		var request contract.NewCampaign
+		render.DecodeJSON(r.Body, &request)
+		id, err := service.Create(request)
 
-	r.Get("/json", func(w http.ResponseWriter, r *http.Request) {
-		obj := map[string]string{"message": "success"}
-		render.JSON(w, r, obj)
-	})
-
-	r.Post("/product", func(w http.ResponseWriter, r *http.Request) {
-		var product01 product
-		render.DecodeJSON(r.Body, &product01)
-		product01.ID = 5
-		render.JSON(w, r, product01)
+		if err != nil {
+			if errors.Is(err, internalerrors.ErrInternal) {
+				render.Status(r, 500)
+			} else {
+				render.Status(r, 400)
+			}
+			render.JSON(w, r, map[string]string{"error": err.Error()})
+			return
+		} else {
+			render.Status(r, 201)
+			render.JSON(w, r, map[string]string{"id": id})
+		}
 	})
 
 	http.ListenAndServe(":3000", r)
-}
-
-func myMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		println("before")
-		next.ServeHTTP(w, r)
-		println("after")
-	})
-}
-
-func myMiddleware2point0(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		println("request on:", r.Method, " to url:", r.RequestURI)
-		next.ServeHTTP(w, r)
-	})
 }
