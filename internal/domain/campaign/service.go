@@ -5,11 +5,15 @@ import (
 	internalerrors "emailn/internal/internalErrors"
 )
 
-type Service struct {
+type Service interface {
+	Create(newCampaign contract.NewCampaign) (string, error)
+}
+
+type ServiceImp struct {
 	RepositoryS Repository
 }
 
-func (s *Service) Create(newCampaign contract.NewCampaign) (string, error) {
+func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
 
 	campaign, err := NewCampaign(newCampaign.Name, newCampaign.Content, newCampaign.Contacts)
 	if err != nil {

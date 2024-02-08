@@ -17,6 +17,8 @@ type Campaign struct {
 	Created  time.Time `validate:"required"`
 	Content  string    `validate:"min=3,max=1024"`
 	Contacts []Contact `validate:"min=1,dive"`
+	// TO FINISH EXERCISE
+	Status string `validate:"required"`
 }
 
 func NewCampaign(name string, content string, emails []string) (*Campaign, error) {

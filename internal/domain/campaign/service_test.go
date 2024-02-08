@@ -31,7 +31,7 @@ var (
 		Contacts: []string{"test1@gmail.com", "test2@gmail.com", "test3@gmail.com"},
 	}
 
-	service = Service{}
+	service = ServiceImp{}
 )
 
 func TestCreateCampaign(t *testing.T) {
